@@ -60,4 +60,9 @@ public class Code
 	{
 		myCode.set(i, p);
 	}
+	
+	public String getCodeString()
+	{
+		return codeString;
+	}
 }

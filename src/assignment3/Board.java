@@ -2,6 +2,8 @@ package assignment3;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+
+import javax.swing.JOptionPane;
 /*This class deals with all the i/o. */
 
 public class Board {
@@ -33,25 +35,39 @@ public class Board {
 				+ "For each peg, which is fully incorrect, you get no feedback.\n"
 				+ "Only the first letter of the color is displayed. B for Blue, R for Red, and so forth.\n"
 				+ "When entering guesses you only need to enter the first character of each color as a capital letter.\n"
-				+ "You have 15 guesses to figure out the secret code or you lose the game.  Are you ready to play? (Y/N): ");
+				+ "You have 15 guesses to figure out the secret code or you lose the game.");
 		
 		
 		
 		Pattern valid = Pattern.compile("[YNyn]{1}");
-		String input = myScanner.next();
-		Matcher valid_input = valid.matcher(input);
-		while(!valid_input.find())
+		String input = JOptionPane.showInputDialog("Are you ready to play? (Y/N):");
+		boolean success = false;
+		while (!success)
 		{
-			System.out.println("Invalid Option. Type 'Y' for yes and 'N' for no.");
-			input = myScanner.next();
-			valid_input = valid.matcher(input);
+			try
+			{
+				success = true;
+				Matcher valid_input = valid.matcher(input);
+				while(!valid_input.find())
+				{
+					System.out.println("Invalid Option. Type 'Y' for yes and 'N' for no.");
+					input = myScanner.next();
+					valid_input = valid.matcher(input);
+				}
+				if(input.equalsIgnoreCase("n"))
+				{
+					return false;
+				}
+				System.out.println("Generating Secret Code...");
+				return true;
+			}
+			catch(NullPointerException ex)
+			{
+				continue;
+			}
 		}
-		if(input.equalsIgnoreCase("n"))
-		{
-			return false;
-		}
-		System.out.println("Generating Secret Code...");
-		return true;
+		
+		return false;
 	}
 
 	
@@ -67,35 +83,43 @@ public class Board {
 	 */
 	public String getInput()
 	{
-		System.out.println("You have " + myTurns + " guesses left. \nWhat is your next guess?\n"
+		/*System.out.println("You have " + myTurns + " guesses left. \nWhat is your next guess?\n"
 				+ "Type in the characters for your guess and press enter.\n"
-				+ "Enter Guess: ");
-		String input = myScanner.next();
+				+ "Enter Guess: "); 
+				myScanner.next();
+		*/
+		String input = JOptionPane.showInputDialog("You have " + myTurns + " guesses left. \nWhat is your next guess?\n"
+				+ "Type in the characters for your guess and press enter.\n"
+				+ "Enter Guess: ");		
 		return input;
 	}
 	
 	/*
 	 * Displays error message for incorrect output
 	 */
-	public void outputDumbUser()
+	public void outputDumbUser(int codeLen)
 	{
-		System.out.println("INVALID GUESS. Valid colors are blue, red, green, yellow, orange, maroon, and purple.\nUse only uppercase first letter for colors.\n");
+		JOptionPane.showMessageDialog(null,"INVALID GUESS. Valid colors are blue, red, green, yellow, orange, maroon, and purple.\nUse only uppercase first letter for colors.\nGuess must have " + codeLen + " pegs.");
+		//System.out.println("INVALID GUESS. Valid colors are blue, red, green, yellow, orange, maroon, and purple.\nUse only uppercase first letter for colors.\n");
 	}
 	
 	public void outputFeedback(FeedbackResult feedback)
 	{
-		System.out.println(feedback.toString());
-		System.out.println("\n");
+		JOptionPane.showMessageDialog(null, feedback.toString());
+		/*
+			System.out.println(feedback.toString());
+			System.out.println("\n");
+		*/
 	}
 	
 	public void printWin()
 	{
-		System.out.println("You win!");
+		JOptionPane.showMessageDialog(null, "You win!");
 	}
 	
 	public void printLose()
 	{
-		System.out.println("You lose :(");
+		JOptionPane.showMessageDialog(null, "You lose!");
 	}
 
 	/*
@@ -105,21 +129,39 @@ public class Board {
 	 */
 	public boolean playAgain()
 	{
-		System.out.println("Do you want to play again (Y/N)?");
-		Pattern valid = Pattern.compile("[YNyn]{1}");
-		String input = myScanner.next();
-		Matcher valid_input = valid.matcher(input);
-		while(!valid_input.find())
+		String input = JOptionPane.showInputDialog("Do you want to play again? (Y/N):");
+		boolean success = false;
+		while (!success)
 		{
-			System.out.println("Invalid Option. Type 'Y' for yes and 'N' for no.");
-			input = myScanner.next();
-			valid_input = valid.matcher(input);
+			try
+			{
+				Pattern valid = Pattern.compile("[YNyn]{1}");
+				success = true;
+				Matcher valid_input = valid.matcher(input);
+				while(!valid_input.find())
+				{
+					System.out.println("Invalid Option. Type 'Y' for yes and 'N' for no.");
+					input = myScanner.next();
+					valid_input = valid.matcher(input);
+				}
+				if(input.equalsIgnoreCase("n"))
+				{
+					JOptionPane.showMessageDialog(null, "Goodbye.");
+					return false;
+				}
+				System.out.println("Generating Secret Code...");
+				return true;
+			}
+			catch(NullPointerException ex)
+			{
+				continue;
+			}
 		}
-		if(input.equalsIgnoreCase("n"))
-		{
-			System.out.println("Goodbye.");
-			return false;
-		}
-		return true;
+		return false;
+	}
+	
+	public void outputDuplicateGuess(String result)
+	{
+		JOptionPane.showMessageDialog(null, "You've already made this guess. The result: " + result);
 	}
 }

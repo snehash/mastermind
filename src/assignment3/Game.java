@@ -4,6 +4,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
 public class Game {
 
 	private static int codeSize = 5;
@@ -48,33 +50,65 @@ public class Game {
 	 */
 	public boolean turn()
 	{
-		Pattern valid = Pattern.compile("[BGOPYRM]{" + codeSize + "}");
-		String guessString = myBoard.getInput();
-		guessString.toUpperCase();
-
-		Matcher valid_input = valid.matcher(guessString);
-		while(!valid_input.find())
-		{
-			if(guessString.equalsIgnoreCase("HISTORY"))
+		boolean success = false;
+		while(!success)
 			{
-				this.history(); 
-				return false; 
+				Pattern valid = Pattern.compile("^[BGOPYRM]{" + codeSize + "}$");
+				String guessString = myBoard.getInput();
+				try
+				{
+					success = true;
+					guessString.toUpperCase();
+			
+					Matcher valid_input = valid.matcher(guessString);
+					if(!valid_input.find())
+					{
+						if(guessString.equalsIgnoreCase("HISTORY"))
+						{
+							this.history(); 
+							return false; 
+							
+						}
+						else
+						{
+							throw new IllegalGuessException();
+						}
+					}
+					
+					boolean made = false;
+					for(int i = 0; i<myGuesses.size(); i++)
+					{
+						if(myGuesses.get(i).getCodeString().equals(guessString))
+						{
+							myBoard.outputDuplicateGuess(myFeedback.get(i).toString());
+							success = false;
+							made = true;
+							break;
+						}
+					}
+					
+					if(made == true)
+					{
+						continue;
+					}
+					myBoard.decrementTurns();
+					Code guess = new Code(guessString);
+					//check if guess if valid
+					FeedbackResult feedback = generateFeedback(guess);
+					myBoard.outputFeedback(feedback);
+					if(feedback.getBlack() == codeSize)
+					{
+						return true;
+					}
+					
+					return false;
+				}
 				
+				catch(NullPointerException ex)
+				{
+					continue;
+				}
 			}
-			myBoard.outputDumbUser();
-			guessString = myBoard.getInput();
-			valid_input = valid.matcher(guessString);
-		}
-		
-		myBoard.decrementTurns();
-		Code guess = new Code(guessString);
-		//check if guess if valid
-		FeedbackResult feedback = generateFeedback(guess);
-		myBoard.outputFeedback(feedback);
-		if(feedback.getBlack() == codeSize)
-		{
-			return true;
-		}
 		
 		return false;
 	}
@@ -86,6 +120,7 @@ public class Game {
 	 */
 	public FeedbackResult generateFeedback(Code guess)
 	{
+
 		myGuesses.add(guess);
 		FeedbackResult feedback = new FeedbackResult();
 		Code copy = new Code(myCodeString);
@@ -148,7 +183,15 @@ public class Game {
 		boolean win = false;
 		while(myBoard.myTurns != 0 && !win)
 		{
-			win = turn();
+			try
+			{
+				win = turn();
+			}
+			catch(IllegalGuessException ex)
+			{
+				myBoard.outputDumbUser(codeSize);
+			}
+			
 		}
 		
 		if(win)
@@ -172,10 +215,13 @@ public class Game {
 	 */
 	public void history()
 	{ 
-	  System.out.println("Your Guess  |  Feedback"); 
+	  StringBuilder history = new StringBuilder("");
+	  history.append("Your Guess  |  Feedback\n"); 
 	  for (int i=0; i< myGuesses.size(); i++)
-	  {System.out.println(myGuesses.get(i).toString() + "        |  "+ myFeedback.get(i).toString());}
-	  System.out.println("\n");
+	  {
+		  history.append(myGuesses.get(i).toString() + " ----- "+ myFeedback.get(i).toString() + "\n");
+	  }
+	  	 JOptionPane.showMessageDialog(null, history);
 	}
 
 }
