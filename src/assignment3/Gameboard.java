@@ -12,63 +12,87 @@ import javax.swing.WindowConstants;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Point;
 
-
-
-@SuppressWarnings("serial")
-public class Gameboard extends JFrame{
-	/**
-	 * 
-	 */
+/**
+ * Deals with GUI implementation
+ * Solves EE422C programming assignment #3
+ * @author Sneha Shrotriya, Robert Gilmore
+ * @version 2.01 2015-03-06
+ */
+public class Gameboard {	
 	private static final int TURNS = 15;
 	private static final int CODESIZE = 5;
-	private int myCurrentTurns = TURNS;
-	private final boolean DEBUG = true;
+	
+	private boolean debug;
+	private int myCurrentTurns;
 	private JTextField inputBox;
 	private JButton submitGuess;
 	private Game myGame;
 	private JPanel panel;
+	private JFrame frame;
 	private JLabel[][] guesses;
 	private JLabel[][] feedbacks;
+	private Point frame_loc;
 
 	
-	
-	public Gameboard() 
+	/**
+	 * Creates a new Gameboard 
+	 * @param d boolean debug value tells Game to print code to console for debugging if true
+	 */
+	public Gameboard(boolean d) 
 	{
+		debug = d;
         setup();
     }
 	
-	public void setup()
-	{
+	
+	/**
+	 * Sets up data fields. Separate from constructor to faciliate play again option.
+	 */
+	private void setup()
+	{   
+		frame_loc = null;
+		frame = new JFrame();
+		panel = new JPanel();
         inputBox = new JTextField(CODESIZE);
         submitGuess = new JButton("Enter");
-        myGame = new Game(DEBUG, CODESIZE);
-        panel = new JPanel();
+        myGame = new Game(debug, CODESIZE);
         guesses = new JLabel[TURNS][CODESIZE];
         feedbacks = new JLabel[TURNS][CODESIZE];
+        myCurrentTurns = TURNS;
+
 
         
         initUI();
 	}
 
-    public final void initUI() {
+	/**
+	 * Initializes user interface components.
+	 */
+    private final void initUI() {
 
-       getContentPane().add(panel);
+       frame.getContentPane().add(panel);
+       if (frame_loc != null)
+       {
+    	   frame.setLocation(frame_loc);
+       }
        panel.setLayout(null);
-       panel.setBackground(new Color(255,255,255));
+       panel.setBackground(new Color(204,255,255));
        JButton instructions = new JButton("Instructions");
-       instructions.setBounds(50, 60, 110, 30);
+       instructions.setBounds(235, 630, 110, 30);
        instructions.addActionListener(new java.awt.event.ActionListener() {
  	      @Override
  	      public void actionPerformed(java.awt.event.ActionEvent evt) {
- 	    	 JOptionPane.showMessageDialog(panel, "Welcome to Mastermind.  Here are the rules.\n"
- 					+ "The computer will think of a secret code. The code consists of 5 colored pegs.\n"
+ 	    	 JOptionPane.showMessageDialog(panel,
+ 					"The computer will think of a secret code. The code consists of "+ CODESIZE + " colored pegs.\n"
  					+ "The pegs MUST be one of six colors: blue, green, orange, purple, red, maroon, or yellow.\n"
  					+ "A color may appear more than once in the code. You try to guess what colored pegs are in the code and what order they are in.\n"
  					+ "After you make a valid guess the result (feedback) will be displayed.\n"
  					+ "The result consists of a black peg for each peg you have guessed exactly correct (color and position) in your guess.\n"
- 					+ "For each peg in the guess that is the correct color, but is out of position, you get a gray peg.\n"
+ 					+ "For each peg in the guess that is the correct color, but is out of position, you get a white peg.\n"
  					+ "For each peg, which is fully incorrect, you get no feedback.\n"
+ 					+ "NOTE: the feedback is not displayed in any particular order in relation to the code.\n"
  					+ "Only the first letter of the color is displayed. B for Blue, R for Red, and so forth.\n"
  					+ "When entering guesses you only need to enter the first character of each color as a capital letter.\n"
  					+ "You have " + TURNS + " guesses to figure out the secret code or you lose the game.");
@@ -78,12 +102,14 @@ public class Gameboard extends JFrame{
        panel.add(instructions);
 
        
-       JLabel inputBoxLabel = new JLabel("Enter Guess");
-       inputBoxLabel.setBounds(50, 270, 110, 20);
-       inputBox.setBounds(50, 300, 110, 30);
+       JLabel inputBoxLabel = new JLabel("Enter Guess:");
+       inputBoxLabel.setFont(new Font("Serif", Font.PLAIN, 18));
+       //inputBoxLabel.setForeground(new Color(225,225,225));
+       inputBoxLabel.setBounds(25, 627, 110, 20);
+       inputBox.setBounds(25, 650, 90, 30);
        panel.add(inputBox);
        panel.add(inputBoxLabel);
-       submitGuess.setBounds(170, 300, 70, 30);
+       submitGuess.setBounds(130, 650, 75, 30);
        submitGuess.addActionListener(new java.awt.event.ActionListener() {
  	      @Override
  	      public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -94,42 +120,53 @@ public class Gameboard extends JFrame{
        
        
        
-       Icon emptyGuess = new ImageIcon("empty_guess.png");
+       Icon emptyGuess = new ImageIcon("empty_guess2.png");
+       Icon blankFeedback = new ImageIcon("blankfeedback.png");
        for(int i = 0; i<guesses.length; i++)
        {
     	   for(int j = 0; j<guesses[j].length; j++)
     	   {
     		   guesses[i][j] = new JLabel();
-    		   guesses[i][j].setBounds(350+j*45, 20 + i*40,37,30);
+    		   guesses[i][j].setBounds(25+j*37, 65 + i*37,32,32);
     		   guesses[i][j].setIcon(emptyGuess);
     		   panel.add(guesses[i][j]);
     		   
+    		   
     		   feedbacks[i][j] = new JLabel();
-    		   feedbacks[i][j].setBounds(650+j*45, 20 + i*40,37,30);
-    		   feedbacks[i][j].setIcon(emptyGuess);
+    		   feedbacks[i][j].setBounds(230+j*25, 70 + i*37,20,20);
+    		   feedbacks[i][j].setIcon(blankFeedback);
     		   panel.add(feedbacks[i][j]);
+    		   
     		   
     	   }
        }
        
        JLabel yourGuesses = new JLabel("Guesses");
-       yourGuesses.setBounds(400,625,200,20);
-       yourGuesses.setFont(new Font("Serif", Font.PLAIN, 25));
+       yourGuesses.setBounds(80,40,200,20);
+       yourGuesses.setFont(new Font("Serif", Font.PLAIN, 20));
        panel.add(yourGuesses);
        
        JLabel yourFb = new JLabel("Feedback");
-       yourFb.setBounds(700,625,200,20);
-       yourFb.setFont(new Font("Serif", Font.PLAIN, 25));
+       yourFb.setBounds(255,40,200,20);
+       yourFb.setFont(new Font("Serif", Font.PLAIN, 20));
        panel.add(yourFb);
        
-       setTitle("Mastermind");
-       setSize(1000, 700);
-       setLocationRelativeTo(null);
-       //setDefaultCloseOperation(EXIT_ON_CLOSE);
-       setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+       JLabel title = new JLabel("Mastermind");
+       title.setBounds(130, 5, 200, 20);
+       title.setFont(new Font("Serif", Font.PLAIN, 25));
+       panel.add(title);
+       
+       frame.setTitle("Mastermind");
+       frame.setSize(410, 730);
+       frame.setLocationRelativeTo(null);
+       frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+       frame.setVisible(true);
     }
     
-    public void processGuess()
+    /**
+     * Processes a user guess and draws appropriate GUI components
+     */
+    private void processGuess()
     {
     	try
     	{
@@ -143,19 +180,19 @@ public class Gameboard extends JFrame{
     			 assignment3.Color color = guess.getPeg(i).getColor();
     			 switch(color)
     			 {
-	 				 case RED:  filepath = "red.png";
+	 				 case RED:  filepath = "red2.png";
 	 				 			break;
-	 				 case YELLOW: filepath = "yello.png";
+	 				 case YELLOW: filepath = "yellow2.png";
 	 				          	  break;
-	 				 case GREEN: filepath = "green.png";
+	 				 case GREEN: filepath = "green2.png";
 		          	  			  break;
-	 				 case BLUE: filepath = "blue.png";
+	 				 case BLUE: filepath = "blue2.png";
 	 	  			  			break;
-	 				 case ORANGE: filepath = "orange.png";
+	 				 case ORANGE: filepath = "orange2.png";
 	 				 			break;
-	 				 case PURPLE: filepath = "purple.png";
+	 				 case PURPLE: filepath = "purple2.png";
 	 				 			break;
-	 				 case MAROON: filepath = "maroon.png";
+	 				 case MAROON: filepath = "maroon2.png";
 	 				 default: break;
     			 }
  				
@@ -166,25 +203,27 @@ public class Gameboard extends JFrame{
     		int total = 0;
     		for (int i = 0; i<feedback.getBlack(); i++)
     		{
-    			feedbacks[TURNS-myCurrentTurns][total].setIcon(new ImageIcon("black.png"));
+    			feedbacks[TURNS-myCurrentTurns][total].setIcon(new ImageIcon("black2.png"));
     			total++;
     		}
     		for (int i = 0; i<feedback.getWhite(); i++)
     		{
-    			feedbacks[TURNS-myCurrentTurns][total].setIcon(new ImageIcon("grey.png"));
+    			feedbacks[TURNS-myCurrentTurns][total].setIcon(new ImageIcon("white2.png"));
     			total++;
     		}
     		myCurrentTurns--;
     		
     		if(feedback.getBlack() == CODESIZE)
     		{
-    			JOptionPane.showMessageDialog(panel,"You Win!!!");
-    			setup();
+
+    			playAgain("You Win!!!");
     		}
     		else if(myCurrentTurns == 0)
     		{
     			JOptionPane.showMessageDialog(panel,"You Lose :(");
+    			frame.dispose();
     			setup();
+
     		}
     	}
     	catch (IllegalGuessException ex)
@@ -198,10 +237,27 @@ public class Gameboard extends JFrame{
     	
     }
     
-
-    public static void main(String[] args) {
-           Gameboard Mastermind = new Gameboard();
-           Mastermind.setVisible(true);
+    /**
+     * Figures out if user wants to play game again.
+     * @param message String for win or lose so that appropriate dialog text is shown
+     */
+    private void playAgain(String message)
+    {
+		String n_message =  message + "\nDo you want to play again?";
+		int play_again = JOptionPane.showConfirmDialog(panel, n_message, "Game Over", JOptionPane.YES_NO_OPTION);
+		if(play_again == JOptionPane.YES_OPTION)
+		{
+			frame_loc = frame.getLocation();
+			frame.dispose();
+			setup();
+		}
+		
+		else
+		{
+			frame.dispose();
+		}
+		
     }
+    
 }
 

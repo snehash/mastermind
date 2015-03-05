@@ -6,6 +6,13 @@ import java.util.regex.Pattern;
 import java.util.ArrayList;
 
 
+/**
+ * Class to do all the game logic
+ * Solves EE422C programming assignment #3
+ * @author Sneha Shrotriya, Robert Gilmore
+ * @version 2.01 2015-03-06
+ */
+
 public class Game {
 
 	private Code secretCode;
@@ -14,8 +21,12 @@ public class Game {
 	private int myCodeSize;
 	private ArrayList<Code> myGuesses;
 	private ArrayList<FeedbackResult> myFeedback;
-	/*
-	 * Initializes new game board and generates secret code.
+	
+
+	/**
+	 * Initializes game components and generates secret code.
+	 * @param debug boolean to determine whether code should print to screen for testing purposes
+	 * @param codeSize int to determine length of code
 	 */
 	public Game(boolean debug, int codeSize)
 	{
@@ -41,12 +52,14 @@ public class Game {
 		}
 	}
 	
-	public Code getSecretCode()
-	{
-		return secretCode;
-	}
-	
-	
+	/**
+	 * Attempts to generate a Code object from the user's guess
+	 * 
+	 * @param guess String with String representation of Code
+	 * @return Code created from guess String
+	 * @throws DuplicateGuessException if guess has been made previously
+	 * @throws IllegalGuessException if guess is otherwise invalid
+	 */
 	public Code generateCode(String guess)
 	{
 		
@@ -59,21 +72,21 @@ public class Game {
 		}	
 		for(int i = 0; i<myGuesses.size(); i++)
 		{
-			if(myGuesses.get(i).getCodeString().equals(guess))
+			if(myGuesses.get(i).toString().equals(guess))
 			{
 				throw new DuplicateGuessException();
 			}
 		}
 			
 		Code guessCode = new Code(guess);
-		generateFeedback(guessCode);
 		return guessCode;
 	}
 	
-	/*
-	 * Input: Code
-	 * Output: FeedbackResult 
+	/**
 	 * Generates black peg and white peg count encapsulated within FeedbackResult type based on user guess.
+	 * 
+	 * @param guess Code object of guess made
+	 * @return FeedbackResult object with black and white peg count
 	 */
 	public FeedbackResult generateFeedback(Code guess)
 	{
