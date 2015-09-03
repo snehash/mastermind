@@ -1,9 +1,9 @@
-package assignment3;
+package mastermind;
 
 /**
 *Class to deal with illegal guesses.
 *Solves EE422C programming assignment #3
-*@author Sneha Shrotriya, Robert Gilmore
+*@author Sneha Shrotriya
 *@version 2.01 2015-03-06
 */
 public class IllegalGuessException extends RuntimeException{

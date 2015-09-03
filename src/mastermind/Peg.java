@@ -1,4 +1,4 @@
-package assignment3;
+package mastermind;
 
 /**
  * Class to hold information about color and position of a Peg
@@ -44,6 +44,7 @@ public class Peg
 	 * Determines if two pegs are the same
 	 * @param p Peg to check against
 	 * @return boolean true if Pegs have same position and Color otherwise false
+	 * Invariant: Both pegs are unchanged
 	 */
 	public boolean equals(Peg p)
 	{

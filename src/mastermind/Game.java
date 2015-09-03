@@ -1,9 +1,11 @@
-package assignment3;
+package mastermind;
 
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.ArrayList;
+
+import mastermind.Color.ColorNum;
 
 
 /**
@@ -34,11 +36,29 @@ public class Game {
 		myDebug = debug;
 		String codeString = "";
 		Random rand = new Random();
-		Color myColors[] = Color.values();
+		ColorNum[] myColors = Color.values();
 		for (int i = 0; i<myCodeSize; i++)
 		{
 			int random = rand.nextInt(myColors.length);
-			codeString += myColors[random].toString();
+			String peg = "";
+			switch(myColors[random])
+			 {
+				 case RED:  peg = "R";
+				 			break;
+				 case YELLOW: peg = "Y";
+				          	  break;
+				 case GREEN: peg = "G";
+	          	  			  break;
+				 case BLUE: peg = "B";
+	  			  			break;
+				 case ORANGE: peg = "O";
+				 			break;
+				 case PURPLE: peg = "P";
+				 			break;
+				 case MAROON: peg = "M";
+				 default: break;
+			 }
+			codeString += peg;
 		}
 		
 		myCodeString = codeString;
@@ -59,6 +79,7 @@ public class Game {
 	 * @return Code created from guess String
 	 * @throws DuplicateGuessException if guess has been made previously
 	 * @throws IllegalGuessException if guess is otherwise invalid
+	 * Precondition: guess string contains myCodeSize number of capital letters of valid colors 
 	 */
 	public Code generateCode(String guess)
 	{
@@ -87,6 +108,7 @@ public class Game {
 	 * 
 	 * @param guess Code object of guess made
 	 * @return FeedbackResult object with black and white peg count
+	 * Precondition: Code guess is a valid guess 
 	 */
 	public FeedbackResult generateFeedback(Code guess)
 	{
@@ -131,6 +153,16 @@ public class Game {
 		
 		myFeedback.add(feedback);
 		return feedback;
+	}
+	
+	/**
+	 * Gets string representation of the code
+	 * @return String representing code
+	 * Invariant: Code
+	 */
+	public String getCodeString()
+	{
+		return myCodeString;
 	}
 	
 

@@ -1,11 +1,11 @@
-package assignment3;
+package mastermind;
 
 import java.util.ArrayList;
 
 /**
 Class to store and manipulate a Code object.
 Solves EE422C programming assignment #3
-@author Sneha Shrotriya, Robert Gilmore
+@author Sneha Shrotriya
 @version 2.01 2015-03-06
 */
 
@@ -17,7 +17,8 @@ public class Code
 	/**
 	 * Constructs a code made up of Pegs.
 	 *
-	 * @param s the String representing the code
+	 * @param s the String representing the code. Should be capital first letter of each Peg color in the Code
+	 * 
 	 */
 	public Code(String s)
 	{
@@ -26,40 +27,21 @@ public class Code
 		for(int i = 0; i<s.length(); i++)
 		{
 			String sub = s.substring(i, i+1);
-			Color pegColor = Color.RED;
-			switch(sub){
-				case "G": pegColor = Color.GREEN;
-					  	  break;
-				case "Y": pegColor = Color.YELLOW;
-				          break;
-				case "B": pegColor = Color.BLUE;
-				  		  break;
-				case "O": pegColor = Color.ORANGE;
-				  		  break;
-				case "P": pegColor = Color.PURPLE;
-						  break;
-				case "M": pegColor = Color.MAROON;
-				default: break;
-			}
+			Color pegColor = new Color(sub);
 			Peg p = new Peg(i, pegColor);
 			myCode.add(p);
 		}
 	}
 	
-	/**
-	 * Removes a Peg from the Code at the given position
-	 *
-	 * @param pos the position to remove the Peg from
-	 */
-	public void removePeg(int pos){
-		myCode.remove(pos);
-	}
 	
 	/**
 	 * Returns the Peg at a given position in the Code
 	 * 
 	 * @param pos the position of the Peg
 	 * @return Peg at the position given
+	 * Precondition: 0<= pos < Code size
+	 * Postcondition: None
+	 * Invariant: Code size
 	 */
 	public Peg getPeg(int pos)
 	{
@@ -70,6 +52,7 @@ public class Code
 	 * Returns the length of the code
 	 *
 	 * @return int length of the code
+	 * Invariant: Code size
 	 */
 	public int size()
 	{
@@ -77,9 +60,10 @@ public class Code
 	}
 	
 	/**
-	 * Returns a String representation of the code
+	 * Use capital first letter of each Peg color to get String representation of Code
 	 *
 	 * @return String representation of the code
+	 * Invariant: Code 
 	 */
 	public String toString()
 	{
@@ -91,6 +75,9 @@ public class Code
 	 * Changes the Peg at a given position
 	 * @param pos int Position in code to modify 
 	 * @param p Peg to place in given position
+	 * 
+	 * Precondition: 0 <= pos < Code size
+	 * Postcondition: index pos now contain Peg p instead of old Peg
 	 */
 	public void setPeg(int pos, Peg p)
 	{

@@ -1,10 +1,10 @@
-package assignment3;
+package mastermind;
 
 
 /**
  * Class to hold black and white peg count when determining feedback
  * Solves EE422C programming assignment #3
- * @author Sneha Shrotriya, Robert Gilmore
+ * @author Sneha Shrotriya
  * @version 2.01 2015-03-06
  */
 
@@ -23,6 +23,7 @@ public class FeedbackResult {
 	
 	/**
 	 * Adds one black peg to the FeedbackResult
+	 * Postcondition: myBlack field contains one more than it did previously
 	 */
 	public void addBlack()
 	{
@@ -31,6 +32,7 @@ public class FeedbackResult {
 	
 	/**
 	 * Adds one white peg to the FeedbackResult
+	 * Postcondition: myWhite field contains one more than it did previously
 	 */
 	public void addWhite()
 	{
